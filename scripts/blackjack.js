@@ -8,7 +8,6 @@ const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'
 
 let playerHand = new Array();
 let dealerHand = new Array();
-
 let deck = createDeck();
 
 //create standard deck of 52 cards
@@ -104,6 +103,7 @@ function hasAce(hand) {
     return ace;
 }
 
+//calculate the card totals for a hand
 function analyzeHand (hand) {
     let totals = calculateTotal(hand);
 
@@ -128,6 +128,7 @@ function analyzeHand (hand) {
     }
 }
 
+//dealer logic
 function dealerTurn () {
     deal(deck, dealerHand, 2);
     let totals = calculateTotal(dealerHand);
@@ -162,5 +163,15 @@ holdBtn.addEventListener('click', _ => {
     dealerTurn();
     console.dir(dealerHand);
 });
+
+//reset the game
+resetBtn.addEventListener('click', _ => {
+    deck = createDeck();
+    playerHand.length = 0;
+    dealerHand.length = 0;
+    if (hitBtn.hasAttribute('disabled')) {
+        hitBtn.toggleAttribute('disabled');
+    }
+})
 
 deal(deck, playerHand, 2);
