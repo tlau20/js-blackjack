@@ -12,7 +12,7 @@ let deck = createDeck();
 
 //create standard deck of 52 cards
 function createDeck() {
-    let deck = new Array();
+    let newDeck = new Array();
 
     for (var i = 0; i < suits.length; i++) {
         for (var j = 0; j < values.length; j++) {
@@ -20,12 +20,12 @@ function createDeck() {
                 value: values[j],
                 suit: suits[i]
             }
-            deck.push(card);
+            newDeck.push(card);
         }
     }
 
-    shuffleDeck(deck);
-    return deck;
+    shuffleDeck(newDeck);
+    return newDeck;
 }
 
 //shuffle deck of cards
@@ -53,7 +53,7 @@ function deal(deck, hand, numCards) {
 
 //calculates total of hand
 function calculateTotal(hand) {
-    let faceCards = ['J', 'Q', 'K'];
+    const faceCards = ['J', 'Q', 'K'];
     let cardTotals = new Array();
     let total = 0;
     let aceTotal = 0;
@@ -85,11 +85,6 @@ function calculateTotal(hand) {
     cardTotals.push(total);
     cardTotals.push(aceTotal);
     return cardTotals;
-}
-
-//get another card
-function hit(deck, hand) {
-    deal(deck, hand, 1);
 }
 
 //check hand for aces
@@ -129,6 +124,7 @@ function analyzeHand (hand) {
 }
 
 //dealer logic
+//TODO: add checks for if dealer goes over 21
 function dealerTurn () {
     deal(deck, dealerHand, 2);
     let totals = calculateTotal(dealerHand);
@@ -147,12 +143,47 @@ function dealerTurn () {
             totals = calculateTotal(dealerHand);
         }
     }
+}
 
+function calculateWinner(playerHand, dealerHand) {
+    const playerTotals = calculateTotal(playerHand);
+    const dealerTotals = calculateTotal(dealerHand);
+
+    let playerTotal = 0;
+    let dealerTotal = 0;
+
+    if (hasAce(playerHand)) {
+        if (playerTotals[0] > 21) {
+            playerTotal = playerTotals[1];
+        } else {
+            playerTotal = playerTotals[0];
+        }
+    } else {
+        playerTotal = playerTotals[0];
+    }
+
+    if (hasAce(dealerHand)) {
+        if (dealerTotals[0] > 21) {
+            dealerTotal = dealerTotals[1];
+        } else {
+            dealerTotal = dealerTotals[0];
+        }
+    } else {
+        dealerTotal = dealerTotals[0];
+    }
+
+    if (playerTotal > dealerTotal) {
+        console.log('You win!');
+    } else {
+        console.log('Dealer wins!');
+    }
+
+    console.log(`${playerTotal} , ${dealerTotal}`);
 }
 
 //add a card to your hand
 hitBtn.addEventListener('click', _ => {
-    hit(deck, playerHand);
+    deal(deck, playerHand, 1);
     analyzeHand(playerHand);
 });
 
@@ -161,7 +192,7 @@ holdBtn.addEventListener('click', _ => {
     // analyzeGameState();
     hitBtn.toggleAttribute('disabled');
     dealerTurn();
-    console.dir(dealerHand);
+    calculateWinner(playerHand, dealerHand);
 });
 
 //reset the game
@@ -172,6 +203,7 @@ resetBtn.addEventListener('click', _ => {
     if (hitBtn.hasAttribute('disabled')) {
         hitBtn.toggleAttribute('disabled');
     }
+    deal(deck, playerHand, 2);
 })
 
 deal(deck, playerHand, 2);
