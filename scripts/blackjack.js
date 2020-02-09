@@ -187,7 +187,7 @@ function calculateWinner(playerHand, dealerHand) {
 
 const cardArea = document.getElementById('card-display');
 
-//animation functions
+//rendering functions
 function renderCard (cards) {
     cards.forEach(card => {
         let cardDealt = document.createElement('img');
@@ -196,7 +196,7 @@ function renderCard (cards) {
         cardArea.append(cardDealt);
     })
 }
-//end animation functions
+//end rendering functions
 
 
 //add a card to your hand
