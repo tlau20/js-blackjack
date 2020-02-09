@@ -93,12 +93,6 @@ function hit(deck, hand) {
     deal(deck, hand, 1);
 }
 
-//add a card to your hand
-hitBtn.addEventListener('click', _ => {
-    hit(deck, playerHand);
-    analyzeGameState();
-});
-
 //check hand for aces
 function hasAce(hand) {
     let ace = false;
@@ -110,10 +104,15 @@ function hasAce(hand) {
     return ace;
 }
 
-function analyzeGameState () {
-    let totals = calculateTotal(playerHand);
+function analyzeHand (hand) {
+    let totals = calculateTotal(hand);
 
-    if (hasAce(playerHand)) {
+    if (totals[0] == 21 || totals[1] == 21) {
+        console.log('You win!');
+        return;
+    }
+
+    if (hasAce(hand)) {
         if (totals[1] > 21) {
             console.log(`total: ${totals[1]}, bust!`);
         } else {
@@ -128,5 +127,40 @@ function analyzeGameState () {
         }
     }
 }
+
+function dealerTurn () {
+    deal(deck, dealerHand, 2);
+    let totals = calculateTotal(dealerHand);
+
+    if (hasAce(dealerHand)) {
+        if (totals[0] == 21) return;
+        if (totals[0] >= 17) return;
+        while (totals[1] < 17) {
+            deal(deck, dealerHand, 1);
+            totals = calculateTotal(dealerHand);
+        }
+    } else {
+        while (totals[0] < 17) {
+            if (totals[0] == 21) return;
+            deal(deck, dealerHand, 1);
+            totals = calculateTotal(dealerHand);
+        }
+    }
+
+}
+
+//add a card to your hand
+hitBtn.addEventListener('click', _ => {
+    hit(deck, playerHand);
+    analyzeHand(playerHand);
+});
+
+//stay and end your turn
+holdBtn.addEventListener('click', _ => {
+    // analyzeGameState();
+    hitBtn.toggleAttribute('disabled');
+    dealerTurn();
+    console.dir(dealerHand);
+});
 
 deal(deck, playerHand, 2);
