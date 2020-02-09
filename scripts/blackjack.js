@@ -43,12 +43,16 @@ function shuffleDeck(deck) {
 //deal cards
 //deck = deck of cards
 //hand = player or dealer hand
+//returns list of cards dealt
 function deal(deck, hand, numCards) {
+    let cardsDealt = new Array();
     for (var i = 0; i < numCards; i++) {
-        console.log('Dealt: ' + deck[0].value + deck[0].suit);
+        console.log('Dealt: ' + deck[0].value + deck[0].suit); 
+        cardsDealt.push(`${deck[0].value}${deck[0].suit}`); //deal top card of deck
         hand.push(deck[0]); //deal top card
         deck.shift();
     }
+    return cardsDealt;
 }
 
 //calculates total of hand
@@ -181,9 +185,24 @@ function calculateWinner(playerHand, dealerHand) {
     console.log(`${playerTotal} , ${dealerTotal}`);
 }
 
+const cardArea = document.getElementById('card-display');
+
+//animation functions
+function renderCard (cards) {
+    cards.forEach(card => {
+        let cardDealt = document.createElement('img');
+        cardDealt.setAttribute('src', `images/cards/${card}.png`);
+        cardDealt.classList.add('card');
+        cardArea.append(cardDealt);
+    })
+}
+//end animation functions
+
+
 //add a card to your hand
 hitBtn.addEventListener('click', _ => {
-    deal(deck, playerHand, 1);
+    let cardDealt = deal(deck, playerHand, 1);
+    renderCard(cardDealt);
     analyzeHand(playerHand);
 });
 
@@ -206,4 +225,5 @@ resetBtn.addEventListener('click', _ => {
     deal(deck, playerHand, 2);
 })
 
-deal(deck, playerHand, 2);
+
+renderCard(deal(deck, playerHand, 2));
