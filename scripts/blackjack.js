@@ -2,13 +2,13 @@ const hitBtn = document.getElementById('hit-btn');
 const holdBtn = document.getElementById('hold-btn');
 const resetBtn = document.getElementById('reset-btn');
 const playerCards = document.getElementById('player-cards');
-const dealerCards = document.getElementById('dealer-cards');
 const playerTotal = document.getElementById('player-total');
+const dealerCards = document.getElementById('dealer-cards');
 const dealerTotal = document.getElementById('dealer-total');
+
 const NUM_SWAPS = 1000;
 const USER = 'user';
 const DEALER = 'dealer';
-
 const suits = ['D', 'C', 'H', 'S'];
 const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 

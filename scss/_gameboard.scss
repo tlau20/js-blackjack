@@ -35,5 +35,12 @@
         max-width: 100%;
         display: block;
         height: inherit;
+        animation-name: test;
+        animation-duration: .5s;
     }
+}
+
+@keyframes test {
+    from {height: 2vh;}
+    to {height: 30vh;}
 }
