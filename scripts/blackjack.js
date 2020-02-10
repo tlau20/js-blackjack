@@ -131,15 +131,16 @@ function hasAce(hand) {
 }
 
 //dealer logic
-//TODO: add checks for if dealer goes over 21
 function dealerTurn () {
     renderCard(deal(deck, dealerHand, 2, DEALER), DEALER);
     let totals = calculateTotal(dealerHand);
 
     if (hasAce(dealerHand)) {
         if (totals.total == 21) return;
-        if (totals.total >= 17) return;
+        if (totals.total >= 17 && totals.total < 21) return; //catch cases like 9/A/etc
+        if (totals.aceTotal >= 17) return;
         while (totals.aceTotal < 17) {
+            if (totals.total < 17) return;
             renderCard(deal(deck, dealerHand, 1, DEALER), DEALER);
             totals = calculateTotal(dealerHand);
         }
