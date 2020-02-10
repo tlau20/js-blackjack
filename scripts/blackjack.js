@@ -1,7 +1,13 @@
 const hitBtn = document.getElementById('hit-btn');
 const holdBtn = document.getElementById('hold-btn');
 const resetBtn = document.getElementById('reset-btn');
+const playerCards = document.getElementById('player-cards');
+const dealerCards = document.getElementById('dealer-cards');
+const playerTotal = document.getElementById('player-total');
+const dealerTotal = document.getElementById('dealer-total');
 const NUM_SWAPS = 1000;
+const USER = 'user';
+const DEALER = 'dealer';
 
 const suits = ['D', 'C', 'H', 'S'];
 const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
@@ -44,21 +50,42 @@ function shuffleDeck(deck) {
 //deck = deck of cards
 //hand = player or dealer hand
 //returns list of cards dealt
-function deal(deck, hand, numCards) {
+function deal(deck, hand, numCards, player) {
     let cardsDealt = new Array();
     for (var i = 0; i < numCards; i++) {
-        console.log('Dealt: ' + deck[0].value + deck[0].suit); 
-        cardsDealt.push(`${deck[0].value}${deck[0].suit}`); //deal top card of deck
+        // console.log('Dealt: ' + deck[0].value + deck[0].suit);
+        // cardsDealt.push(`${deck[0].value}${deck[0].suit}`); //deal top card of deck
+        cardsDealt.push({
+            name: `${deck[0].value}${deck[0].suit}`
+        });
         hand.push(deck[0]); //deal top card
         deck.shift();
     }
+
+    let totals = calculateTotal(hand);
+    switch (player) {
+        case USER:
+            if (totals.aceTotal > 0) {
+                playerTotal.innerText = `${totals.total}/${totals.aceTotal}`;
+            } else {
+                playerTotal.innerText = totals.total;
+            }
+            break;
+        case DEALER:
+            if (totals.aceTotal > 0) {
+                dealerTotal.innerText = `${totals.total}/${totals.aceTotal}`;
+            } else {
+                dealerTotal.innerText = totals.total;
+            }
+            break;
+    }
+
     return cardsDealt;
 }
 
 //calculates total of hand
 function calculateTotal(hand) {
     const faceCards = ['J', 'Q', 'K'];
-    let cardTotals = new Array();
     let total = 0;
     let aceTotal = 0;
 
@@ -86,9 +113,10 @@ function calculateTotal(hand) {
         });
     }
 
-    cardTotals.push(total);
-    cardTotals.push(aceTotal);
-    return cardTotals;
+    return {
+        total: total,
+        aceTotal: aceTotal
+    };
 }
 
 //check hand for aces
@@ -102,98 +130,99 @@ function hasAce(hand) {
     return ace;
 }
 
-//calculate the card totals for a hand
-function analyzeHand (hand) {
-    let totals = calculateTotal(hand);
-
-    if (totals[0] == 21 || totals[1] == 21) {
-        console.log('You win!');
-        return;
-    }
-
-    if (hasAce(hand)) {
-        if (totals[1] > 21) {
-            console.log(`total: ${totals[1]}, bust!`);
-        } else {
-            console.log(`total: ${totals[0]}`);
-            console.log(`ace total: ${totals[1]}`);
-        }
-    } else {
-        if (totals[0] > 21) {
-            console.log(`total: ${totals[0]}, bust!`);
-        } else {
-            console.log(`total : ${totals[0]}`);
-        }
-    }
-}
-
 //dealer logic
 //TODO: add checks for if dealer goes over 21
 function dealerTurn () {
-    deal(deck, dealerHand, 2);
+    renderCard(deal(deck, dealerHand, 2, DEALER), DEALER);
     let totals = calculateTotal(dealerHand);
 
     if (hasAce(dealerHand)) {
-        if (totals[0] == 21) return;
-        if (totals[0] >= 17) return;
-        while (totals[1] < 17) {
-            deal(deck, dealerHand, 1);
+        if (totals.total == 21) return;
+        if (totals.total >= 17) return;
+        while (totals.aceTotal < 17) {
+            renderCard(deal(deck, dealerHand, 1, DEALER), DEALER);
             totals = calculateTotal(dealerHand);
         }
     } else {
-        while (totals[0] < 17) {
-            if (totals[0] == 21) return;
-            deal(deck, dealerHand, 1);
+        while (totals.total < 17) {
+            if (totals.total == 21) return;
+            renderCard(deal(deck, dealerHand, 1, DEALER), DEALER);
             totals = calculateTotal(dealerHand);
         }
     }
 }
 
+//calculate the card totals for a hand
+function analyzeHand (hand) {
+    let totals = calculateTotal(hand);
+    let handData = {
+        total: 0,
+        bust: false
+    };
+
+    if (totals.total == 21 || totals.aceTotal == 21) {
+        // console.log('21!');
+        // return;
+        handData.total = 21;
+        return handData;
+    }
+
+    if (hasAce(hand)) {
+        if (totals.aceTotal > 21) {
+            // console.log(`total: ${totals.aceTotal}, bust!`);
+            handData.bust = true;
+        } else {
+            // console.log(`total: ${totals.total}`);
+            // console.log(`ace total: ${totals.aceTotal}`);
+            // totals.total > totals.aceTotal ? handData.total = totals.total : handData.totals = totals.aceTotal;
+            if (totals.total > totals.aceTotal && totals.total <= 21) {
+                handData.total = totals.total;
+            } else {
+                handData.total = totals.aceTotal;
+            }
+        }
+    } else {
+        if (totals.total > 21) {
+            // console.log(`total: ${totals.total}, bust!`);
+            handData.bust = true;
+        } else {
+            // console.log(`total : ${totals.total}`);
+            handData.total = totals.total;
+        }
+    }
+
+    return handData;
+}
+
 function calculateWinner(playerHand, dealerHand) {
-    const playerTotals = calculateTotal(playerHand);
-    const dealerTotals = calculateTotal(dealerHand);
+    let player = analyzeHand(playerHand);
+    let dealer = analyzeHand(dealerHand);
 
-    let playerTotal = 0;
-    let dealerTotal = 0;
-
-    if (hasAce(playerHand)) {
-        if (playerTotals[0] > 21) {
-            playerTotal = playerTotals[1];
-        } else {
-            playerTotal = playerTotals[0];
-        }
-    } else {
-        playerTotal = playerTotals[0];
+    if (player.bust) {
+        console.log('You bust!');
+    }
+    if (dealer.bust) {
+        console.log('Dealer bust!');
     }
 
-    if (hasAce(dealerHand)) {
-        if (dealerTotals[0] > 21) {
-            dealerTotal = dealerTotals[1];
-        } else {
-            dealerTotal = dealerTotals[0];
-        }
-    } else {
-        dealerTotal = dealerTotals[0];
-    }
-
-    if (playerTotal > dealerTotal) {
+    if (player.total === dealer.total) {
+        console.log('Tie!');
+    } else if (player.total > dealer.total) {
         console.log('You win!');
     } else {
         console.log('Dealer wins!');
     }
 
-    console.log(`${playerTotal} , ${dealerTotal}`);
+    // console.log(`Player: ${player.total} Dealer: ${dealer.total}`);
 }
 
-const cardArea = document.getElementById('card-display');
-
 //rendering functions
-function renderCard (cards) {
+function renderCard (cards, player) {
     cards.forEach(card => {
         let cardDealt = document.createElement('img');
-        cardDealt.setAttribute('src', `images/cards/${card}.png`);
+        cardDealt.setAttribute('src', `images/cards/${card.name}.png`);
         cardDealt.classList.add('card');
-        cardArea.append(cardDealt);
+        (player === 'user') ? playerCards.appendChild(cardDealt) : dealerCards.appendChild(cardDealt);
     })
 }
 //end rendering functions
@@ -201,9 +230,7 @@ function renderCard (cards) {
 
 //add a card to your hand
 hitBtn.addEventListener('click', _ => {
-    let cardDealt = deal(deck, playerHand, 1);
-    renderCard(cardDealt);
-    analyzeHand(playerHand);
+    renderCard(deal(deck, playerHand, 1, USER), USER);
 });
 
 //stay and end your turn
@@ -219,11 +246,22 @@ resetBtn.addEventListener('click', _ => {
     deck = createDeck();
     playerHand.length = 0;
     dealerHand.length = 0;
+    playerTotal.innerText = '';
+    dealerTotal.innerText = '';
+
     if (hitBtn.hasAttribute('disabled')) {
         hitBtn.toggleAttribute('disabled');
     }
-    deal(deck, playerHand, 2);
+
+    //delete cards from previous hand
+    while (playerCards.firstChild) {
+        playerCards.removeChild(playerCards.firstChild);
+    }
+    while (dealerCards.firstChild) {
+        dealerCards.removeChild(dealerCards.firstChild);
+    }
+
+    renderCard(deal(deck, playerHand, 2, USER), USER);
 })
 
-
-renderCard(deal(deck, playerHand, 2));
+renderCard(deal(deck, playerHand, 2, USER), USER);
