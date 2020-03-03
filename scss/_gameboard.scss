@@ -1,10 +1,10 @@
 .wrapper {
     margin: 0 auto;
-    max-width: 1400px;
+    width: 100%;
+    background-color: #eee;
 }
 
 #gameboard {
-    border: 1px solid;
     flex: 1;
     display: flex;
     flex-wrap: wrap;
@@ -18,9 +18,18 @@
     display: flex;
     justify-content: center;
 
+    font-size: 4em;
+    color: #eee;
+
     button {
-        background-color: grey;
         padding: 0 32px;
+    }
+
+    #hit-btn,
+    #hold-btn,
+    #reset-btn {
+        text-shadow: 2px 2px 2px rgba(22, 22, 22, 0.15),
+        -2px -2px 2px white;
     }
 }
 
@@ -30,17 +39,71 @@
     margin: 0 auto;
     display: flex;
     justify-content: center;
+}
 
-    img {
-        max-width: 100%;
-        display: block;
-        height: inherit;
-        animation-name: test;
-        animation-duration: .5s;
+.card {
+    height: 100%;
+    width: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #eee;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2),
+    -4px -3px 6px white;
+    border-radius: 20px;
+    animation: light 0.3s ease-in;
+    position: relative;
+    margin-right: 20px;
+    font-size: 3em;
+    text-shadow: 2px 2px 2px rgba(22, 22, 22, 0.15),
+    -2px -2px 2px white;
+    color: #eee;
+}
+.card h1 {
+    font-size: 3em;
+    animation: lightText .4s ease-in;
+}
+.top-card-value,
+.bottom-card-value {
+    position: absolute;
+    animation: lightText .4s ease-in;
+}
+.top-card-value {
+    top: 0;
+    left: 6px;
+}
+.bottom-card-value {
+    bottom: 0;
+    right: 6px;
+}
+@keyframes light {
+    from {
+        box-shadow: none;
+        text-shadow: none;
+    }
+    to {
+        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2),
+        -5px -5px 12px white;
+        text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2),
+        -2px -2px 6px white;
+    }
+}
+@keyframes lightText {
+    from {
+        text-shadow: none;
+    }
+    to {
+        text-shadow: 2px 2px 2px rgba(22, 22, 22, 0.15),
+        -2px -2px 2px white;
     }
 }
 
-@keyframes test {
-    from {height: 2vh;}
-    to {height: 30vh;}
+.cardTotal {
+    font-size: 4em;
+    background-color: #666666;
+    color: transparent;
+    background-clip: text;
+    text-shadow: rgba(245,245,245,0.4) 3px 5px 3px;
+    font-family: 'Work Sans', sans-serif;
+    font-weight: bold;
 }

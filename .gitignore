@@ -87,7 +87,7 @@ assets/
 styles/
 styles/*.css
 styles/*.map
-
+.vscode/
 
 # Misc files to ignore #
 ########################

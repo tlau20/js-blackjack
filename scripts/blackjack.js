@@ -55,9 +55,11 @@ function deal(deck, hand, numCards, player) {
     for (var i = 0; i < numCards; i++) {
         // console.log('Dealt: ' + deck[0].value + deck[0].suit);
         // cardsDealt.push(`${deck[0].value}${deck[0].suit}`); //deal top card of deck
-        cardsDealt.push({
-            name: `${deck[0].value}${deck[0].suit}`
-        });
+        // cardsDealt.push({
+        //     name: `${deck[0].value}${deck[0].suit}`,
+        //     value: deck[0].value
+        // });
+        cardsDealt.push(deck[0]);
         hand.push(deck[0]); //deal top card
         deck.shift();
     }
@@ -219,12 +221,46 @@ function calculateWinner(playerHand, dealerHand) {
 
 //rendering functions
 function renderCard (cards, player) {
+    // cards.forEach(card => {
+    //     let cardDealt = document.createElement('img');
+    //     cardDealt.setAttribute('src', `images/cards/${card.name}.png`);
+    //     cardDealt.classList.add('card');
+    //     (player === 'user') ? playerCards.appendChild(cardDealt) : dealerCards.appendChild(cardDealt);
+    // });
+
     cards.forEach(card => {
-        let cardDealt = document.createElement('img');
-        cardDealt.setAttribute('src', `images/cards/${card.name}.png`);
+        let cardDealt = document.createElement('div');
+        let topValue = document.createElement('span');
+        let bottomValue = document.createElement('span');
+        let suit = document.createElement('h1');
+
+        switch (card.suit) {
+            case 'D':
+                suit.innerHTML = '\u2666';
+                break;
+            case 'C':
+                suit.innerHTML = '\u2663';
+                break;
+            case 'H':
+                suit.innerHTML = '\u2665';
+                break;
+            case 'S':
+                suit.innerHTML = '\u2660';
+                break;
+        }
+
         cardDealt.classList.add('card');
+        topValue.classList.add('top-card-value');
+        topValue.innerText = card.value;
+        bottomValue.classList.add('bottom-card-value')
+        bottomValue.innerText = card.value;
+
+        cardDealt.appendChild(topValue);
+        cardDealt.appendChild(bottomValue);
+        cardDealt.appendChild(suit);
+
         (player === 'user') ? playerCards.appendChild(cardDealt) : dealerCards.appendChild(cardDealt);
-    })
+    });
 }
 //end rendering functions
 
@@ -232,12 +268,14 @@ function renderCard (cards, player) {
 //add a card to your hand
 hitBtn.addEventListener('click', _ => {
     renderCard(deal(deck, playerHand, 1, USER), USER);
+    hitBtn.innerHTML = 'New Hand';
 });
 
 //stay and end your turn
 holdBtn.addEventListener('click', _ => {
     // analyzeGameState();
     hitBtn.toggleAttribute('disabled');
+    holdBtn.toggleAttribute('disabled');
     dealerTurn();
     calculateWinner(playerHand, dealerHand);
 });
@@ -252,6 +290,10 @@ resetBtn.addEventListener('click', _ => {
 
     if (hitBtn.hasAttribute('disabled')) {
         hitBtn.toggleAttribute('disabled');
+    }
+
+    if (holdBtn.hasAttribute('disabled')) {
+        holdBtn.toggleAttribute('disabled');
     }
 
     //delete cards from previous hand
