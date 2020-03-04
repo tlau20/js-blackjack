@@ -1,6 +1,7 @@
 const hitBtn = document.getElementById('hit-btn');
 const holdBtn = document.getElementById('hold-btn');
 const resetBtn = document.getElementById('reset-btn');
+const startBtn = document.getElementById('start-btn');
 const playerCards = document.getElementById('player-cards');
 const playerTotal = document.getElementById('player-total');
 const dealerCards = document.getElementById('dealer-cards');
@@ -53,12 +54,6 @@ function shuffleDeck(deck) {
 function deal(deck, hand, numCards, player) {
     let cardsDealt = new Array();
     for (var i = 0; i < numCards; i++) {
-        // console.log('Dealt: ' + deck[0].value + deck[0].suit);
-        // cardsDealt.push(`${deck[0].value}${deck[0].suit}`); //deal top card of deck
-        // cardsDealt.push({
-        //     name: `${deck[0].value}${deck[0].suit}`,
-        //     value: deck[0].value
-        // });
         cardsDealt.push(deck[0]);
         hand.push(deck[0]); //deal top card
         deck.shift();
@@ -147,7 +142,7 @@ function dealerTurn () {
             totals = calculateTotal(dealerHand);
         }
     } else {
-        while (totals.total < 17) {
+        while (totals.total < 17 || (hasAce(dealerHand) && totals.aceTotal < 17)) {
             if (totals.total == 21) return;
             renderCard(deal(deck, dealerHand, 1, DEALER), DEALER);
             totals = calculateTotal(dealerHand);
@@ -221,13 +216,6 @@ function calculateWinner(playerHand, dealerHand) {
 
 //rendering functions
 function renderCard (cards, player) {
-    // cards.forEach(card => {
-    //     let cardDealt = document.createElement('img');
-    //     cardDealt.setAttribute('src', `images/cards/${card.name}.png`);
-    //     cardDealt.classList.add('card');
-    //     (player === 'user') ? playerCards.appendChild(cardDealt) : dealerCards.appendChild(cardDealt);
-    // });
-
     cards.forEach(card => {
         let cardDealt = document.createElement('div');
         let topValue = document.createElement('span');
@@ -264,18 +252,24 @@ function renderCard (cards, player) {
 }
 //end rendering functions
 
+startBtn.addEventListener('click', function (){
+    document.getElementById('start-screen').classList.add('slide-up');
+    hideButtons();
+});
 
 //add a card to your hand
 hitBtn.addEventListener('click', _ => {
     renderCard(deal(deck, playerHand, 1, USER), USER);
-    hitBtn.innerHTML = 'New Hand';
+    const playerCards = analyzeHand(playerHand);
+    if (playerCards.bust) {
+        //show losing screen
+    }
 });
 
 //stay and end your turn
 holdBtn.addEventListener('click', _ => {
     // analyzeGameState();
-    hitBtn.toggleAttribute('disabled');
-    holdBtn.toggleAttribute('disabled');
+    hideButtons();
     dealerTurn();
     calculateWinner(playerHand, dealerHand);
 });
@@ -287,6 +281,11 @@ resetBtn.addEventListener('click', _ => {
     dealerHand.length = 0;
     playerTotal.innerText = '';
     dealerTotal.innerText = '';
+
+    hitBtn.style.textShadow = '2px 2px 2px rgba(0, 0, 0, 0.2), -2px -2px 2px white';
+    hitBtn.style.boxShadow = '5px 5px 10px rgba(0, 0, 0, 0.2), -5px -5px 12px white';
+    holdBtn.style.textShadow = '2px 2px 2px rgba(0, 0, 0, 0.2), -2px -2px 2px white';
+    holdBtn.style.boxShadow = '5px 5px 10px rgba(0, 0, 0, 0.2), -5px -5px 12px white';
 
     if (hitBtn.hasAttribute('disabled')) {
         hitBtn.toggleAttribute('disabled');
@@ -305,6 +304,13 @@ resetBtn.addEventListener('click', _ => {
     }
 
     renderCard(deal(deck, playerHand, 2, USER), USER);
-})
+});
 
-renderCard(deal(deck, playerHand, 2, USER), USER);
+function hideButtons() {
+    hitBtn.style.textShadow = 'none';
+    hitBtn.style.boxShadow = 'none';
+    holdBtn.style.textShadow = 'none';
+    holdBtn.style.boxShadow = 'none';
+    hitBtn.toggleAttribute('disabled');
+    holdBtn.toggleAttribute('disabled');
+}
