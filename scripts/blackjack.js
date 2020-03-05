@@ -202,22 +202,16 @@ function calculateWinner(playerHand, dealerHand) {
         showResultScreen('You lost!');
     }
     if (dealer.bust) {
-        console.log('Dealer bust!');
         showResultScreen('You win!');
     }
 
     if (player.total === dealer.total) {
-        console.log('Tie!');
         showResultScreen('You tied!');
     } else if (player.total > dealer.total) {
-        console.log('You win!');
         showResultScreen('You win!');
     } else {
-        console.log('Dealer wins!');
         showResultScreen('You lost!');
     }
-
-    // console.log(`Player: ${player.total} Dealer: ${dealer.total}`);
 }
 
 //rendering functions
