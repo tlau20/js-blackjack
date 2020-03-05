@@ -148,3 +148,37 @@
 .slide-up {
     transform: translateY(-100%);
 }
+
+#result-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: #eee;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #eee;
+    z-index: -1;
+    opacity: 0;
+    transition: 1s ease-in;
+
+    h1,
+    #play-again-btn {
+        text-shadow: 2px 2px 2px rgba(22, 22, 22, 0.15),
+        -2px -2px 2px white;
+    }
+
+    h1 {
+        font-size: 12em;
+    }
+    #play-again-btn {
+        font-size: 6em;
+        border-radius: 10px;
+        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2),
+        -5px -5px 12px white;
+        padding: 12px 36px;
+    }
+}

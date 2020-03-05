@@ -2,10 +2,12 @@ const hitBtn = document.getElementById('hit-btn');
 const holdBtn = document.getElementById('hold-btn');
 const resetBtn = document.getElementById('reset-btn');
 const startBtn = document.getElementById('start-btn');
+const playAgnBtn = document.getElementById('play-again-btn');
 const playerCards = document.getElementById('player-cards');
 const playerTotal = document.getElementById('player-total');
 const dealerCards = document.getElementById('dealer-cards');
 const dealerTotal = document.getElementById('dealer-total');
+const resultScreen = document.getElementById('result-screen');
 
 const NUM_SWAPS = 1000;
 const USER = 'user';
@@ -197,18 +199,22 @@ function calculateWinner(playerHand, dealerHand) {
     let dealer = analyzeHand(dealerHand);
 
     if (player.bust) {
-        console.log('You bust!');
+        showResultScreen('You lost!');
     }
     if (dealer.bust) {
         console.log('Dealer bust!');
+        showResultScreen('You win!');
     }
 
     if (player.total === dealer.total) {
         console.log('Tie!');
+        showResultScreen('You tied!');
     } else if (player.total > dealer.total) {
         console.log('You win!');
+        showResultScreen('You win!');
     } else {
         console.log('Dealer wins!');
+        showResultScreen('You lost!');
     }
 
     // console.log(`Player: ${player.total} Dealer: ${dealer.total}`);
@@ -262,7 +268,9 @@ hitBtn.addEventListener('click', _ => {
     renderCard(deal(deck, playerHand, 1, USER), USER);
     const playerCards = analyzeHand(playerHand);
     if (playerCards.bust) {
-        //show losing screen
+        showResultScreen('You lost!');
+    } else if (playerCards.total == 21) {
+        showResultScreen('Blackjack!');
     }
 });
 
@@ -276,6 +284,29 @@ holdBtn.addEventListener('click', _ => {
 
 //reset the game
 resetBtn.addEventListener('click', _ => {
+    resetGame();
+});
+
+playAgnBtn.addEventListener('click', function(){
+    resetGame();
+})
+
+function showResultScreen(result) {
+    document.getElementById('result').innerHTML = result;
+    resultScreen.style.opacity = 1;
+    resultScreen.style.zIndex = 2;
+}
+
+function hideButtons() {
+    hitBtn.style.textShadow = 'none';
+    hitBtn.style.boxShadow = 'none';
+    holdBtn.style.textShadow = 'none';
+    holdBtn.style.boxShadow = 'none';
+    hitBtn.toggleAttribute('disabled');
+    holdBtn.toggleAttribute('disabled');
+}
+
+function resetGame() {
     deck = createDeck();
     playerHand.length = 0;
     dealerHand.length = 0;
@@ -286,6 +317,9 @@ resetBtn.addEventListener('click', _ => {
     hitBtn.style.boxShadow = '5px 5px 10px rgba(0, 0, 0, 0.2), -5px -5px 12px white';
     holdBtn.style.textShadow = '2px 2px 2px rgba(0, 0, 0, 0.2), -2px -2px 2px white';
     holdBtn.style.boxShadow = '5px 5px 10px rgba(0, 0, 0, 0.2), -5px -5px 12px white';
+
+    resultScreen.style.opacity = 0;
+    resultScreen.style.zIndex = -1;
 
     if (hitBtn.hasAttribute('disabled')) {
         hitBtn.toggleAttribute('disabled');
@@ -304,13 +338,4 @@ resetBtn.addEventListener('click', _ => {
     }
 
     renderCard(deal(deck, playerHand, 2, USER), USER);
-});
-
-function hideButtons() {
-    hitBtn.style.textShadow = 'none';
-    hitBtn.style.boxShadow = 'none';
-    holdBtn.style.textShadow = 'none';
-    holdBtn.style.boxShadow = 'none';
-    hitBtn.toggleAttribute('disabled');
-    holdBtn.toggleAttribute('disabled');
 }
